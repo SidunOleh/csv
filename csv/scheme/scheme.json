@@ -1,0 +1,4 @@
+{
+    "skipFirstLine": 1,
+    "regex": "/^[A-Za-z]{3,100},[A-Za-z]{3,100}$/"
+}
