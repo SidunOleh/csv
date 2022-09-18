@@ -22,12 +22,14 @@ function config($path) {
 }
 
 // random string
-function randStr($len=5) {
-    $str = '';
-
-    for ($i=0; $i < $len; $i++) { 
-        $str = $str . chr(rand(0, 255));
+function randStr($len = 10) {
+    $chars    = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charsLen = strlen($chars);
+    
+    $randStr = '';
+    for ($i = 0; $i < $len; $i++) {
+        $randStr .= $chars[rand(0, $charsLen - 1)];
     }
 
-    return $str;
+    return $randStr;
 }

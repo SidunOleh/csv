@@ -12,11 +12,15 @@ class Response
 	 * @param bool  $status  
      * @param array $data
 	 * @param array $errors
-     * 
-     * @return string response
+	 * @param array $headers HTTP headers 
+     * @return string json response
      */
-	public static function json($status=true, $data=[], $errors=[])
+	public static function json($status=true, $data=[], $errors=[], $headers=[])
 	{
+		if (count($headers) > 0) {
+			self::headers($headers);
+		}
+
 		$response = [
 			'status' => $status,
 		];
@@ -35,12 +39,19 @@ class Response
 	/**
      * View response
      *    
-	 * @param bool $path  
-     * 
-     * @return string response
+	 * @param bool $path path to view
+	 * @param array $data  
+	 * @param array $headers HTTP headers 
+     * @return string html response
+	 * 
+	 * @throws ViewNotFoundException
      */
-	public static function view($path, $data=[])
-	{
+	public static function view($path, $data=[], $headers=[])
+	{	
+		if (count($headers) > 0) {
+			self::headers($headers);
+		}
+
 		$path = implode('/', explode('.', $path));
 		
 		if (! file_exists($filename = ROOT . '/views/' . $path . '.php')) {
@@ -55,5 +66,18 @@ class Response
 		ob_end_clean();
 	
 		return $response;
+	}
+
+    /**
+     * Set HTTP headers
+     *    
+	 * @param array $headers HTTP headers  
+     * @return void
+     */
+	public static function headers($headers)
+	{
+		foreach ($headers as $name => $value) {
+			header($name . ':' . $value);
+		}
 	}
 }

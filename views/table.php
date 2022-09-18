@@ -20,8 +20,8 @@
                 <?php foreach ($users as $user): ?>
 
                     <tr class="table-body__row">
-                        <td><?php echo $user['name'] ?></td>
-                        <td><?php echo $user['surname'] ?></td>
+                        <td><?php echo $user->name ?></td>
+                        <td><?php echo $user->surname ?></td> 
                     </tr>
 
                 <?php endforeach ?>

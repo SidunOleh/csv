@@ -2,9 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Models\CsvModel;
 use App\Components\Response;
-use App\Validation\CsvValidator;
+use App\Models\User;
+use App\Validators\Rules\Csv;
+use App\Validators\Validator;
 
 class CsvController extends Controller
 {
@@ -15,42 +16,41 @@ class CsvController extends Controller
 
     public function table()
     {
-        $users = CsvModel::users();
+        $users = User::all();
 
         return Response::view('table', compact('users'));
     }
 
     public function import()
     {
-        header('Location: /');
+        Response::headers(['Location'=>'/']);
         
-        if (! isset($_FILES['csv']) or $_FILES['csv']['error']) {
-            $_SESSION['message'] = 'Problem with CSV file';
+        $validator = new Validator([
+            'csv' => new Csv('/^[a-zA-Z]{3,100},[a-zA-Z]{3,100}$/', true),
+        ]);
+
+        $validator->validate();
+
+        if ($validator->isFaiulre()) {
+            $_SESSION['message'] = $validator->errors()['csv'];
             return;
         }
 
-        $filename = ROOT . '/csv/files/' . randStr() . '.csv';
+        $filename = ROOT . '/storage/' .randStr() . '.csv';
         move_uploaded_file($_FILES['csv']['tmp_name'], $filename);
-
-        $validator = new CsvValidator(ROOT . '/csv/scheme/scheme.json');
-
-        if (! $validator->isValidFile($filename)) {
-            $_SESSION['message'] = 'CSV file is invalid';
-            return;
-        }
         
-        CsvModel::import($filename);
+        User::import($filename);
 
         $_SESSION['message'] = 'CSV file is successfully uploaded';
     }
 
     public function export()
     {
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename=users.csv');
+        Response::headers([
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=users.csv',
+        ]);
 
-        $csv = CsvModel::export();
-
-        return $csv;
+        return User::export();
     }
 }

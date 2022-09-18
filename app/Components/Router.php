@@ -11,7 +11,6 @@ class Router
      */
 	private $routes;
 
-
 	public function __construct()
 	{
 		$routes = require(ROOT . '/routes/routes.php');
@@ -43,9 +42,7 @@ class Router
 		$path = $this->getPath();
 
 		foreach ($this->routes as $pattern => $route) {
-			
 			if(preg_match("~^$pattern$~", $path)) {
-				
 				$route = preg_replace("~^$pattern$~", $route, $path);
 				
 				$segms = explode('/', $route);
@@ -53,15 +50,10 @@ class Router
 				$controllerName = 'App\Controllers\\' . ucfirst(array_shift($segms)) . 'Controller';
 				$methodName     = array_shift($segms);
 
-				$controller = new $controllerName();
-
-				
-				$response = call_user_func_array([$controller, $methodName], $segms);
+				$response = call_user_func_array([new $controllerName, $methodName], $segms);
 
 				return $response;
-			
 			}
-		
 		}
 
 		throw new PageNotFoundException('Page Not Found.');

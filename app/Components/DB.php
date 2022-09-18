@@ -10,7 +10,6 @@ class DB {
      */
 	private static $db;
 
-	
 	/**
 	 * Connection
 	 * 
@@ -26,6 +25,21 @@ class DB {
 		);
 
 		self::$db = $pdo;
+	}
+
+	/**
+	 * Query
+	 * 
+	 * @param string $sql sql-query
+     * @return PDOStatement|bool result of query 
+     */
+	public static function query($sql)
+	{
+		if (self::$db === null) {
+			self::connect();
+		}
+		
+		return self::$db->query($sql);
 	}
 
 	/**
